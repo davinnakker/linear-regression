@@ -1,0 +1,70 @@
+import pandas as pd
+import numpy as np
+
+class Linear_Regression:
+    def __init__(self, learning_rate, iterations):
+        self.alpha = learning_rate
+        self.iterations = iterations
+
+    def compute_cost(self, w, b, x, y):
+        m, n = x.shape
+        x = np.array(x)
+        y = np.array(y)
+        cost = 0
+        for i in range(m):
+            yp = np.dot(w, x[i]) + b
+            cost += (1/2) * (yp - y[i]) ** 2
+        cost = cost / m
+        print(f"Cost: {cost}")
+        return cost
+    
+    def compute_gradient(self, w, b, x, y):
+        m, n = x.shape
+        x = np.array(x)
+        y = np.array(y)
+        gw = np.zeros(n)
+        gb = 0
+        for i in range(m):
+            yp = np.dot(w, x[i]) + b
+            for j in range(n):
+                gw[j] += (yp - y[i]) * x[i, j]
+            gb += (yp - y[i])
+        gw = gw / m
+        gb = gb / m
+        print(f"Gradient Weight Vector: {gw}, Bias Gradient: {gb}")
+        return gw, gb
+    
+    def fit(self, x, y):
+        m, n = x.shape
+        x = np.array(x)
+        y = np.array(y)
+        self.w = np.zeros(n)
+        self.b = 0
+        for it in range(self.iterations):
+            gw, gb = self.compute_gradient(self.w, self.b, x, y)
+            for j in range(n):
+                self.w[j] = self.w[j] - self.alpha * gw[j]
+            self.b = self.b - self.alpha * gb
+        print(f"Weights = {self.w}, Bias = {self.b}")
+        return self.w, self.b
+    
+    def predict(self, x):
+        x = np.array(x)
+        prediction = np.dot(self.w, x) + self.b
+        print(prediction)
+        return prediction
+    
+
+data = pd.read_csv(r"C:\Users\davin\OneDrive\Desktop\Pandas Demo\StudentPerformance.csv")
+data = data[['Performance Index', 'Hours Studied', 'Sleep Hours']]
+X = data[['Hours Studied', 'Sleep Hours']]
+y = data['Performance Index']
+
+
+learning_rate = 0.019
+iterations = 10000
+
+model = Linear_Regression(learning_rate, iterations)
+model.fit(X, y)
+model.predict([7, 9])
+
